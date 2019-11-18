@@ -21,6 +21,4 @@ fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /password
     
-homepage:
-    path: /
-    controller: App\Controller\AdminController::loggedAction
+

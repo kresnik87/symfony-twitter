@@ -6,11 +6,11 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "api-platform/api-pack": "^1.2",
-        "easycorp/easyadmin-bundle": "^2.0",
         "friendsofsymfony/oauth-server-bundle": "^1.6",
         "friendsofsymfony/user-bundle": "^2.1",
         "knplabs/knp-snappy-bundle": "^1.6",
         "nelmio/cors-bundle": "^1.5",
+        "predis/predis": "^1.1",
         "redjanym/fcm-bundle": "^1.1",
         "simple-bus/symfony-bridge": "^5.1",
         "symfony/asset": "4.2.*",
@@ -86,12 +86,6 @@
             "allow-contrib": false,
             "require": "4.2.*"
         }
-    },
-    "repositories":
-    [
-        {
-            "type": "vcs",
-            "url": "git@github.com:essedi/EasyTranslation.git"
-        }
-    ]
+    }
+
 }

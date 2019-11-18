@@ -5,7 +5,7 @@ security:
           FOS\UserBundle\Model\UserInterface: bcrypt
 
     providers:
-        #in_memory: { memory: ~ }
+        in_memory: { memory: ~ }
         fos_user_bundle:
             id: fos_user.user_provider.username_email
 

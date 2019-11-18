@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'es'
+    redis.host: '%env(REDIS_HOST)%'
+    redis.port: '%env(REDIS_PORT)%'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -50,3 +52,8 @@ services:
                 event: postPersist
                 entity: App\Entity\User
                 entity_manager: custom
+
+    cache.app:
+        class: Symfony\Component\Cache\Adapter\ChainAdapter
+        arguments:
+            $adapters: ['@app.cache.redis']

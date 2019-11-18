@@ -3,38 +3,31 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Entity\Device;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\Exception\InvalidArgumentException;
-use Vich\UploaderBundle\Storage\StorageInterface;
-use App\Service\NotificationGenerator;
 use App\Helpers\ObjectUtils;
+use DateInterval;
 
 class UserController extends Controller
 {
 
-    /**
-     * @var StorageInterface
-     */
-    protected $storage;
 
-    /**
-     * @var NotificationGenerator
-     */
-    protected $notificationGenerator;
 
     /**
      * @var ObjectUtils
      */
     protected $objUtils;
 
-    public function __construct(StorageInterface $storage, NotificationGenerator $notif, ObjectUtils $objUtils)
+    private $cache;
+
+    public function __construct( ObjectUtils $objUtils,AdapterInterface $cacheClient)
     {
-        $this->storage = $storage;
-        $this->notificationGenerator = $notif;
+
         $this->objUtils = $objUtils;
+        $this->cache = $cacheClient;
     }
 
     public function meAction(Request $request)
@@ -83,13 +76,7 @@ class UserController extends Controller
     {
         $token = $this->get("security.token_storage")->getToken();
         //unregister device
-        $device = $this->getDoctrine()->getRepository(Device::class)->findOneByToken($token);
-        if ($device)
-        {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($device);
-            $em->flush();
-        }
+
         try {
             $request->getSession()->invalidate();
             $this->get("security.token_storage")->setToken(null);
@@ -98,19 +85,23 @@ class UserController extends Controller
             return new Response($e, 400);
         }
     }
-
-    public function uploadImageAction(Request $request, $id = null)
+    public function index()
     {
-        $uploadedFile = $request->files->get('file');
-        //get user
-        $user = $id ? $this->getDoctrine()->getRepository(User::class)->find($id) : $this->getUser();
-        $user->setImageFile($uploadedFile);
-        //save data
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($user);
-        $em->flush();
-
-        return new Response(getEnv("BASE_URL") . $this->storage->resolveUri($user, "imageFile"));
+        $cacheKey = 'my_key';
+        $itemCache = $this->cache->getItem($cacheKey);
+        $cached = 'no';
+        if (!$itemCache->isHit()) {
+            $itemCache->set('yes');
+            $itemCache->expiresAfter(new DateInterval('PT10S'));
+            $this->cache->save($itemCache);
+        } else {
+            $cached = $itemCache->get();
+        }
+        return $this->render('home/index.html.twig', [
+            'controller_name' => 'HomeController',
+            'cached' => $cached,
+        ]);
     }
+
 
 }
