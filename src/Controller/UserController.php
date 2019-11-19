@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\TwitterService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,11 +24,14 @@ class UserController extends Controller
 
     private $cache;
 
-    public function __construct( ObjectUtils $objUtils,AdapterInterface $cacheClient)
+    private $twitterClient;
+
+    public function __construct( ObjectUtils $objUtils,AdapterInterface $cacheClient, TwitterService $twitterClient)
     {
 
         $this->objUtils = $objUtils;
         $this->cache = $cacheClient;
+        $this->twitterClient=$twitterClient;
     }
 
     public function meAction(Request $request)
@@ -97,6 +101,9 @@ class UserController extends Controller
         } else {
             $cached = $itemCache->get();
         }
+
+        $data=$this->twitterClient->TestApi();
+        die(var_dump($data));
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
             'cached' => $cached,

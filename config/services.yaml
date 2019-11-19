@@ -57,3 +57,10 @@ services:
         class: Symfony\Component\Cache\Adapter\ChainAdapter
         arguments:
             $adapters: ['@app.cache.redis']
+
+    app.twitter.service:
+        class: App\Service\TwitterService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '%env(TWITTER_API_KEY)%'
+            - '%env(TWITTER_API_SECRET)%'
